@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public void updateUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
         entityManager.merge(user);
         userDAO.save(user);
     }
