@@ -90,9 +90,4 @@ public class AdminController {
         userService.deleteUserById(id);
         return "redirect:/";
     }
-
-    @GetMapping("/tt")
-    public String tt() {
-        return "/tt";
-    }
 }
