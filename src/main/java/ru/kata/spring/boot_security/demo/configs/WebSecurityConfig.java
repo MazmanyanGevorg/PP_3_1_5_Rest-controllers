@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.configs;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,22 +41,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
+
+        http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
-                .antMatchers("/admin/**").hasRole("ADMIN").anyRequest()
-                .authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .successHandler(successUserHandler)
-                .failureUrl("/login_error")
-                .permitAll()
-                .and()
-                .logout()
-                .logoutSuccessUrl("/index") // корневая страница
-                .deleteCookies("JSESSIONID");
+                .antMatchers("/**").permitAll()
+//                .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+//                .antMatchers("/admin/**").hasRole("ADMIN").anyRequest()
+//                .authenticated()
+                .and().csrf().disable();
+//todo security off
+//        http
+//                .csrf().disable()
+//                .authorizeRequests()
+//                .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+//                .antMatchers("/admin/**").hasRole("ADMIN").anyRequest()
+//                .authenticated()
+//                .and()
+//                .formLogin()
+//                .loginPage("/login")
+//                .successHandler(successUserHandler)
+//                .failureUrl("/login_error")
+//                .permitAll()
+//                .and()
+//                .logout()
+//                .logoutSuccessUrl("/index") // корневая страница
+//                .deleteCookies("JSESSIONID");
     }
 
     @Bean
@@ -74,4 +84,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }

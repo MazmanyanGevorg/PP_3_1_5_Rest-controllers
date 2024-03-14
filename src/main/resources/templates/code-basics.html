@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Panel</title>
+    <link rel="icon" href="/img/rolex-logo.png" type="image/icon type" class="rounded-circle">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
           rel="stylesheet"
           integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
@@ -82,7 +83,55 @@
         body {
             padding-top: 56px; /* Учитывает высоту закрепленной навигационной панели, чтобы контент не перекрывался */
         }
+
     </style>
+    <style>
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .btn-close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .btn-close:hover,
+        .btn-close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .table-modal {
+            display: none;
+        }
+
+    </style>
+    <script src="js/rest.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"
+            crossorigin="anonymous"></script>
     <script>
         function openCity(evt, cityName) {
             let i, tabcontent, tablinks;
@@ -97,10 +146,14 @@
             document.getElementById(cityName).style.display = "block";
             evt.currentTarget.className += " active";
 
+
         }
 
-        // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpen");
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // refreshTable();
+        });
     </script>
 
 </head>
@@ -118,9 +171,9 @@
 </nav>
 
 <div class="tab">
-    <div th:if="${#request.isUserInRole('ROLE_ADMIN')}">
-        <button class="tablinks" onclick="openCity(event, 'Admin')">Admin</button>
-    </div>
+    <!--todo security off    <div th:if="${#request.isUserInRole('ROLE_ADMIN')}">-->
+    <button class="tablinks" onclick="openCity(event, 'Admin')">Admin</button>
+    <!--    </div>-->
     <button class="tablinks" onclick="openCity(event, 'User')" id="defaultOpen">User</button>
 </div>
 
@@ -143,12 +196,12 @@
                     </button>
                 </li>
                 <li class="nav-item">
-                    <div th:if="${#request.isUserInRole('ROLE_ADMIN')}">
-                        <button class="nav-link active" style="background-color: lightsteelblue" aria-current="true"
-                                onclick="openCity(event, 'NewUser')">
-                            New User
-                        </button>
-                    </div>
+                    <!--todo security off                    <div th:if="${#request.isUserInRole('ROLE_ADMIN')}">-->
+                    <button class="nav-link active" style="background-color: lightsteelblue" aria-current="true"
+                            onclick="openCity(event, 'NewUser')">
+                        New User
+                    </button>
+                    <!--                    </div>-->
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" style="background-color: lightsteelblue" href="/">Back</a>
@@ -162,7 +215,7 @@
                     <div class="col-md-10">
                         <h2 th:case="null">No Users yet!</h2>
                         <div th:case="*">
-                            <table class="table table-striped table-responsive-md" align='center'>
+                            <table class="table table-striped table-responsive-md" align='center' id="userTable">
                                 <thead>
                                 <tr>
                                     <th scope="col" style="background-color: cornflowerblue">id</th>
@@ -177,247 +230,7 @@
                                     <th style="background-color: coral">Delete</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr th:each="user : ${users}">
-                                    <td th:text="${user.getId()}"></td>
-                                    <td th:text="${user.name}"></td>
-                                    <td th:text="${user.surname}"></td>
-                                    <td th:text="${user.age}"></td>
-                                    <td th:text="${user.level}"></td>
-                                    <td th:text="${user.points}"></td>
-                                    <!--                                            <td th:text="${user.password}"></td>-->
-                                    <td th:text="${user.roles}"></td>
-                                    <td align='center'>
-                                        <button type="button" class="btn btn-warning" data-toggle="modal"
-                                                th:data-target="'#exampleModal' + ${user.id}">
-                                            <i>Edit</i>
-                                        </button>
-                                    </td>
-                                    <td align='center'>
-                                        <button type="submit" class="btn btn-danger" data-toggle="modal"
-                                                th:data-target="'#exampleModal1' + ${user.id}"
-                                                onclick="return confirm('Are you sure you want to delete this user?')">
-                                            <i>Delete</i></button>
-
-                                        <!--                                            ///////////////////////////////////////start-edit-modal//////////////////////////////////////////////////-->
-
-                                        <div class="modal fade" th:id="'exampleModal' + ${user.id}"
-                                             tabindex="-1"
-                                             aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h3 class="modal-title fs-5" id="exampleModalLabel">Edit
-                                                            User</h3>
-                                                        <button class="btn-close" data-dismiss="modal"
-                                                                aria-label="close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div align="center">
-                                                            <h2>Edit User</h2>
-                                                            <form th:action="@{/edit}" th:method="post"
-                                                                  th:object="${user}">
-                                                                <table border="0" cellpadding="5">
-                                                                    <tr>
-                                                                        <td>ID:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input th:type="text" name="id"
-                                                                                       th:value="*{id}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Name:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input placeholder="Must be the unique name"
-                                                                                       type="text" name="name"
-                                                                                       th:value="*{name}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Surname:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input type="text" name="surname"
-                                                                                       th:value="*{surname}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Age:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input type="text" name="age"
-                                                                                       th:value="*{age}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Level:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input type="text" name="level"
-                                                                                       th:value="*{level}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Points:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input type="text" name="points"
-                                                                                       th:value="*{points}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Password:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input placeholder="password"
-                                                                                       type="password" name="password"
-                                                                                       th:value="*{password}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Roles:</td>
-                                                                        <td>
-                                                                            <label th:each="role : ${roles1}"
-                                                                                   th:for="${'role_' + role.id}">
-                                                                                <input th:type="checkbox"
-                                                                                       th:id="'role_' + ${role.id} + ${user.id}"
-                                                                                       th:name="'roles'"
-                                                                                       th:value="${role.id}"
-                                                                                       th:checked="${user.roles.contains(role)}"/>
-                                                                                <span th:text="${role.role}"></span>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                                <button type="submit"
-                                                                        class="btn- btn-secondary">Save
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!--                                            ///////////////////////////////////////////end-edit-modal//////////////////////////////////////////////-->
-                                        <!--                                            ///////////////////////////////////////start-delete-modal//////////////////////////////////////////////////-->
-
-                                        <div class="modal fade" th:id="'exampleModal1' + ${user.id}"
-                                             tabindex="-1"
-                                             aria-labelledby="exampleModalLabel1" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-
-                                                    <div class="modal-header">
-                                                        <h3 class="modal-title fs-5" id="exampleModalLabel1">Delete
-                                                            User</h3>
-                                                        <button class="btn-close" data-dismiss="modal"
-                                                                aria-label="close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div align="center">
-                                                            <h2>Edit User</h2>
-                                                            <form th:action="@{/}" th:method="post"
-                                                                  th:object="${user}">
-                                                                <table border="0" cellpadding="5">
-                                                                    <tr>
-                                                                        <td>ID:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input th:type="text" name="id"
-                                                                                       th:value="*{id}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Name:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input placeholder="Must be the unique name"
-                                                                                       type="text" name="name"
-                                                                                       th:value="*{name}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Surname:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input type="text" name="surname"
-                                                                                       th:value="*{surname}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Age:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input type="text" name="age"
-                                                                                       th:value="*{age}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Level:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input type="text" name="level"
-                                                                                       th:value="*{level}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Points:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input type="text" name="points"
-                                                                                       th:value="*{points}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Password:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input placeholder="password"
-                                                                                       type="password" name="password"
-                                                                                       th:value="*{password}"/>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Roles:</td>
-                                                                        <td>
-                                                                            <label>
-                                                                                <input type="checkbox" name="roles"
-                                                                                       th:each="role : ${roles1}"
-                                                                                       th:text="${role.role}"
-                                                                                       th:value="${role.id}"
-                                                                                />
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                                <button type="submit"
-                                                                        class="btn- btn-secondary">Delete
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!--                                            ///////////////////////////////////////start-delete-modal//////////////////////////////////////////////////-->
-                                    </td>
-                                </tr>
+                                <tbody id="demoA">
                                 </tbody>
                             </table>
                         </div>
@@ -433,6 +246,7 @@
 <!--//////////////////////////////////////////////User start//////////////////////////////////////////////////-->
 
 <div id="User" class="tabcontent" style="display:none;">
+    <br><br>
     <h3>User Details</h3>
     <div class="card text-center">
         <div class="card-header">
@@ -484,17 +298,18 @@
 <!--//////////////////////////////////////////////////New useR////////////////////////////////////////////////////////////-->
 
 <div id="NewUser" class="tabcontent" style="display:none;">
+    <br><br>
     <h3>New user</h3>
     <div class="card text-center">
         <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs">
                 <li class="nav-item">
-                    <div th:if="${#request.isUserInRole('ROLE_ADMIN')}">
-                        <button class="nav-link active" aria-current="true" style="background-color: lightsteelblue"
-                                onclick="openCity(event, 'Admin')">
-                            Users table
-                        </button>
-                    </div>
+                    <!--todo security off                    <div th:if="${#request.isUserInRole('ROLE_ADMIN')}">-->
+                    <button class="nav-link active" aria-current="true" style="background-color: lightsteelblue"
+                            onclick="openCity(event, 'Admin')">
+                        Users table
+                    </button>
+                    <!--                    </div>-->
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="true" href="#"
@@ -509,13 +324,13 @@
         <div align="center">
             <h3>New User</h3>
             <i style="color: blue">При создании пользователей имена должны быть уникальными!</i>
-            <form th:action="@{/user}" th:method="post" th:object="${user}">
+            <form th:action="@{/api/users}" th:method="post" th:object="${user}" id="createNewUser">
                 <table border="0" cellpadding="5">
                     <tr>
                         <td>Name:</td>
                         <td>
                             <label>
-                                <input placeholder="Must be the unique name" name="name"
+                                <input placeholder="Must be the unique name"
                                        type="text" th:field="*{name}"/>
                             </label>
                         </td>
@@ -524,7 +339,7 @@
                         <td>Surname:</td>
                         <td>
                             <label>
-                                <input placeholder="Surname" type="text" th:field="*{surname}" name="username"/>
+                                <input placeholder="Surname" type="text" th:field="*{surname}"/>
                             </label>
                         </td>
                     </tr>
@@ -532,7 +347,7 @@
                         <td>Age:</td>
                         <td>
                             <label>
-                                <input placeholder="Age" type="number" th:field="*{age}" name="age"/>
+                                <input placeholder="Age" type="number" th:field="*{age}"/>
                             </label>
                         </td>
                     </tr>
@@ -540,7 +355,7 @@
                         <td>Level:</td>
                         <td>
                             <label>
-                                <input placeholder="level" type="number" th:field="*{level}" name="level"/>
+                                <input placeholder="level" type="number" th:field="*{level}" />
                             </label>
                         </td>
                     </tr>
@@ -548,7 +363,7 @@
                         <td>Points:</td>
                         <td>
                             <label>
-                                <input placeholder="points" type="number" th:field="*{points}" name="points"/>
+                                <input placeholder="points" type="number" th:field="*{points}"/>
                             </label>
                         </td>
                     </tr>
@@ -556,19 +371,20 @@
                         <td>Password:</td>
                         <td>
                             <label>
-                                <input placeholder="password" type="password" th:field="*{password}" name="password"/>
+                                <input placeholder="password" type="password" th:field="*{password}"/>
                             </label>
                         </td>
                     </tr>
                     <tr>
                         <td>Roles:</td>
                         <td>
-                            <label>
-                                <select th:name="roles" th:value="*{roles}">
-                                    <option th:each="role:${roles1}" th:value="${role.id}" th:text="${role.role}"
-                                            name="roles"
-                                            selected></option>
-                                </select>
+                            <label th:each="role:${roles1}"
+                                   th:for="${'role_' + role.id}">
+                                <input th:type="checkbox"
+                                       th:id="'role_' + ${role.id}"
+                                       th:name="'roles'"
+                                       th:value="${role.id}"/>
+                                <span th:text="${role.role}"></span>
                             </label>
                         </td>
                     </tr>
@@ -585,9 +401,390 @@
     </div>
 </div>
 
+<!--////////////////////////////////////////////////////////Edit Modal Start///////////////////////////////////////////////////////////////////-->
+
+<div class="modal" id="edit-modal-window" role="dialog"
+     tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fs-5" id="exampleModalLabel">Edit
+                    User</h3>
+                <button class="btn-close" data-dismiss="modal"
+                        id="close_edit_modal" aria-label="close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div align="center">
+                    <h2>Edit User</h2>
+                    <form id="edit-user-form">
+                        <div id="ed-form"></div>
+                        <button type="submit" id="save_edit_modal"
+                                class="btn- btn-secondary">Save
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--///////////////////////////////////////////Edit-Modal-End////////////////////////////////////////////////////////////////-->
+
+<!--///////////////////////////////////////////Delete-Modal-Start////////////////////////////////////////////////////////////////-->
+
+
+<div class="modal" id="delete-modal-window" role="dialog"
+     tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fs-5" id="exampleModalLabel1">Delete
+                    User</h3>
+                <button class="btn-close" data-dismiss="modal"
+                        id="close_delete_modal" aria-label="close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div align="center">
+                    <h2>Delete User</h2>
+                    <form id="delete-user-form">
+                        <div id="del-form"></div>
+                        <button type="submit" id="save_delete_modal"
+                                class="btn- btn-secondary">Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--///////////////////////////////////////////Delete-Modal-End////////////////////////////////////////////////////////////////-->
+
+<!--///////////////////////////////////////////Table-Modal-Start////////////////////////////////////////////////////////////////-->
+
+
+<div id="table-modal" class="table-modal" border="0" cellpadding="5">
+    <div class="row row-cols-auto">
+        <div class="col-4">
+            ID:
+        </div>
+        <div class="col">
+            <label class="font-weight-bold" for="editID">
+                <input class="form-control" id="editID"
+                       type="number" disabled/>
+            </label>
+        </div>
+    </div>
+    <div class="row row-cols-auto">
+        <div class="col-4">
+            Name:
+        </div>
+        <div class="col">
+            <label class="font-weight-bold" for="editName">
+                <input placeholder="Must be the unique name"
+                       class="form-control" id="editName"
+                       type="text"  required/>
+            </label>
+        </div>
+    </div>
+    <div class="row row-cols-auto">
+        <div class="col-4">
+            Surname:
+        </div>
+        <div class="col">
+            <label class="font-weight-bold" for="editSurname">
+                <input class="form-control" id="editSurname"
+                       type="text" required/>
+            </label>
+        </div>
+    </div>
+    <div class="row row-cols-auto">
+        <div class="col-4">
+            Age:
+        </div>
+        <div class="col">
+            <label class="font-weight-bold" for="editAge">
+                <input class="form-control" id="editAge"
+                       type="number" required/>
+            </label>
+        </div>
+    </div>
+    <div class="row row-cols-auto">
+        <div class="col-4">
+            Level:
+        </div>
+        <div class="col">
+            <label class="font-weight-bold" for="editLevel">
+                <input class="form-control" id="editLevel"
+                       type="number" required/>
+            </label>
+        </div>
+    </div>
+    <div class="row row-cols-auto">
+        <div class="col-4">
+            Points:
+        </div>
+        <div class="col">
+            <label class="font-weight-bold" for="editPoints">
+                <input class="form-control" id="editPoints"
+                       type="text" required/>
+            </label>
+        </div>
+    </div>
+    <div class="row row-cols-auto">
+        <div class="col-4">
+            Password:
+        </div>
+        <div class="col">
+            <label class="font-weight-bold" for="editPassword">
+                <input class="form-control" id="editPassword"
+                       placeholder="password"
+                       type="password" required/>
+            </label>
+        </div>
+    </div>
+    <div class="row row-cols-auto">
+        <div class="col-4">
+            Roles:
+        </div>
+        <div class="col">
+            <div id="editOptions">
+                <label for="editRoleSelectADMIN">ADMIN</label>
+                <input type="checkbox" id="editRoleSelectADMIN"
+                       value="ADMIN" checked>
+                &nbsp;&nbsp;
+                <label for="editRoleSelectUSER">USER</label>
+                <input type="checkbox" id="editRoleSelectUSER"
+                       value="USER" checked>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!--///////////////////////////////////////////Table-Modal-End////////////////////////////////////////////////////////////////-->
+
+<script>
+    // Заполнение основной таблицы
+
+    window.addEventListener("load", () => {
+        // (B) FETCH DATA FROM REST API
+        fetch('http://localhost:8080/api/users/')
+            .then(response => response.json())
+            .then(data => {
+                // (C) ADD DATA ROWS TO EXISTING TBODY
+                var tbody = document.getElementById("demoA");
+
+                data.forEach(obj => {
+                    let row = tbody.insertRow();
+                    for (let key in obj) {
+                        // Skip the "password" key
+                        if (key !== "password") {
+                            let cell = row.insertCell();
+                            if (key === "roles") {
+                                // Display role values from array
+                                let roles = obj[key];
+                                if (Array.isArray(roles)) {
+                                    cell.innerHTML = roles.map(role => role.role).join(", ");
+                                } else {
+                                    cell.innerHTML = "N/A";
+                                }
+                            } else {
+                                cell.innerHTML = obj[key];
+                            }
+                        }
+                    }
+
+                    // Add edit button
+                    let editCell = row.insertCell();
+                    let editButton = document.createElement("button");
+                    editButton.innerHTML = "Edit";
+                    editButton.classList.add("btn", "btn-warning");
+                    editButton.setAttribute("onclick", "openEditModal()");
+                    editButton.setAttribute("data-userid", "${user.id}");
+                    editButton.setAttribute("data-target", "#editModal");
+                    editCell.append(editButton);
+
+
+                    // Add delete button
+                    let deleteCell = row.insertCell();
+                    let deleteButton = document.createElement("button");
+                    deleteButton.innerHTML = "Delete";
+                    deleteButton.classList.add("btn", "btn-danger");
+                    deleteButton.setAttribute("onclick", "openDeleteModal()");
+                    editButton.setAttribute("data-userid", "${user.id}");
+                    editButton.setAttribute("data-target", "#deleteModal");
+                    deleteCell.append(deleteButton);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+
+<script>
+
+
+//  Открытие модального окна
+    function openEditModal() {
+        document.getElementById('edit-modal-window').style.display = 'block';
+    }
+
+    document.querySelector('.btn-close').addEventListener('click', function () {
+        document.getElementById('edit-modal-window').style.display = 'none';
+    });
+
+    function openDeleteModal() {
+        document.getElementById('delete-modal-window').style.display = 'block';
+    }
+
+    document.querySelector('.btn-close').addEventListener('click', function () {
+        document.getElementById('delete-modal-window').style.display = 'none';
+    });
+
+    // Функция для обработки отправки формы
+    function submitEditForm() {
+        // Закрываем модальное окно после отправки формы
+    }
+
+    function submitDeleteForm() {
+        // Закрываем модальное окно после отправки формы
+    }
+
+    const tableContent = document.getElementById('table-modal').innerHTML;
+
+    function populateForm(formId) {
+        const form = document.getElementById(formId);
+        form.innerHTML = tableContent;
+    }
+
+    // Вызов функции для заполнения формы edit-modal-window
+    populateForm('ed-form');
+
+    // Вызов функции для заполнения формы delete-modal-window
+    populateForm('del-form');
+
+
+// Чтоб при клике вне модального окна, окно исчезло
+    // Получаем модальное окно
+    const modalEdit = document.getElementById('edit-modal-window');
+    const modalDelete = document.getElementById('delete-modal-window');
+    const modalDeleteClose = document.getElementById('close_delete_modal');
+
+    // Прослушиваем событие клика на весь документ
+    window.addEventListener('click', function(event) {
+        // Проверяем, что клик был сделан вне модального окна
+        if (event.target === modalEdit || event.target === modalDelete || event.target === modalDeleteClose) {
+            modalEdit.style.display = 'none'; // Закрываем модальное окно
+            modalDelete.style.display = 'none'; // Закрываем модальное окно
+            modalDeleteClose.style.display = 'none'; // Закрываем модальное окно
+        }
+    });
+
+</script>
+
+<script>
+    let currentUser;
+    let usersList;
+    // Функция для отправки данных пользователя на сервер
+    async function updateUserOnServer(updatedUser) {
+        try {
+            const response = await fetch('/api/users/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedUser)
+            });
+
+            if (response.ok) {
+                console.log('User updated successfully');
+                // Дополнительные действия при успешном обновлении пользователя
+            } else {
+                console.log('Failed to update user');
+                // Дополнительные действия при ошибке обновления пользователя
+            }
+        } catch (error) {
+            console.error('Error updating user:', error);
+        }
+    }
+
+    // Функция, которая заполняет форму модального окна данными выбранного пользователя
+    function fillModalWithData(selectedUser) {
+        document.getElementById('editID').value = selectedUser.id;
+        document.getElementById('editName').value = selectedUser.name;
+        document.getElementById('editSurname').value = selectedUser.surname;
+        document.getElementById('editAge').value = selectedUser.age;
+        document.getElementById('editLevel').value = selectedUser.level;
+        document.getElementById('editPoints').value = selectedUser.points;
+        document.getElementById('editRoleUser').checked = selectedUser.roles.includes('user');
+        document.getElementById('editRoleAdmin').checked = selectedUser.roles.includes('admin');
+    }
+
+    // Обработчик события нажатия кнопки "Edit" в таблице
+    function editButtonHandler(userId) {
+        const selectedUser = usersList.find(user => user.id == userId);
+        fillModalWithData(selectedUser);
+        // Отображаем модальное окно
+        document.getElementById('myModal').style.display = 'block';
+
+        // Обработчик на кнопку "Сохранить" в модальном окне
+        document.getElementById('saveButton').addEventListener('click', function() {
+            const updatedUser = {
+                id: document.getElementById('editID').value,
+                name: document.getElementById('editName').value,
+                surname: document.getElementById('editSurname').value,
+                age: document.getElementById('editAge').value,
+                level: document.getElementById('editLevel').value,
+                points: document.getElementById('editPoints').value,
+                roles: []
+            };
+            if (document.getElementById('editRoleUser').checked) {
+                updatedUser.roles.push('user');
+            }
+            if (document.getElementById('editRoleAdmin').checked) {
+                updatedUser.roles.push('admin');
+            }
+
+            updateUserOnServer(updatedUser);
+        });
+    }
+
+
+</script>
+
+<script>
+ // Создание пользователя
+    let createNewUser = document.getElementById('createNewUser');
+    createNewUser.onsubmit = async (e) => {
+        e.preventDefault();
+        let formData = new FormData(createNewUser);
+
+        const plainFormData = Object.fromEntries(formData.entries());
+        plainFormData.roles = formData.getAll('roles');
+        const json = JSON.stringify(plainFormData);
+
+        let response = await fetch('/api/users/', {
+
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            method: 'POST',
+            body: json
+        });
+
+        let result = await response.json();
+        // alert(result.message);
+    };
+
+</script>
+
+
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>

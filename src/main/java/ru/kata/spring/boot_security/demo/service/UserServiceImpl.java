@@ -10,13 +10,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import ru.kata.spring.boot_security.demo.dao.RoleDAO;
 import ru.kata.spring.boot_security.demo.dao.UserDAO;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.util.UserNotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,9 +57,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (userByIdFromDB == null) {
             createRolesIfNotExist();
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+//            enrichUser(user);
             userDAO.saveAndFlush(user);
         } else throw new RuntimeException("User by id: " + user.getId() + " in DB already exist");
     }
+
+//    private void enrichUser(User user) {
+//        user.setCreatedAt(LocalDateTime.now());
+//        user.setUpdateAt(LocalDateTime.now());
+//        user.setCreatedWho("ADMIN");
+//    }
 
     @Override
     public void updateUser(User user) {
@@ -67,9 +78,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public User getUserById(Long id) {
         User user = userDAO.getUserById(id);
-        if (user != null) {
-            return userDAO.getUserById(id);
-        } else throw new RuntimeException("User by id: " + id + " in DB not found");
+        if (user == null) {
+            throw new UserNotFoundException("There is no user with ID = " +
+                    id + " in Database");
+        }
+        return userDAO.getUserById(id);
     }
 
     @Override
@@ -127,6 +140,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (user != null) {
             userDAO.deleteUserByName(name);
             entityManager.remove(user);
+        }
+    }
+
+    public void conditionForBindingResult(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder();
+
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                errorMsg.append(error.getField())
+                        .append(" - ")
+                        .append(error.getDefaultMessage())
+                        .append(";");
+            }
+            throw new UsernameNotFoundException(errorMsg.toString());
         }
     }
 }

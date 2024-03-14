@@ -1,14 +1,18 @@
 package ru.kata.spring.boot_security.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.kata.spring.boot_security.demo.dto.UserDTO;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
@@ -20,6 +24,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User implements UserDetails {
 
     @Id
@@ -53,6 +58,15 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles;
+//
+//    @Column(name = "createdAt")
+//    private LocalDateTime createdAt;
+//
+//    @Column(name = "updateAt")
+//    private LocalDateTime updateAt;
+//
+//    @Column(name = "createdWho")
+//    private String createdWho;
 
     public User(String password, String name, String surname, int age, int level, int points) {
         this.name = name;
@@ -61,6 +75,18 @@ public class User implements UserDetails {
         this.level = level;
         this.points = points;
         this.password = password;
+    }
+
+    public User(UserDTO userDTO) {
+
+        this.id = userDTO.getId();
+        this.name = userDTO.getName();
+        this.surname = userDTO.getSurname();
+        this.password = userDTO.getPassword();
+        this.age = userDTO.getAge();
+        this.level = userDTO.getLevel();
+        this.points = userDTO.getPoints();
+//todo        this.roles = userDTO.getRoles();
     }
 
     @Override
