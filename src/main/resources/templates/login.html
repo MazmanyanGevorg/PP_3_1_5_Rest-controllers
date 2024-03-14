@@ -21,7 +21,8 @@
     <br/><br/><br/>
     <form th:action="@{/login}" method="post" role="form" style="max-width: 350px; margin: 0 auto;">
         <div class="border border-secondary p-3 rounded"><h1>Login page</h1>
-            <img src="https://cdn.comparably.com/26678850/l/google-logo.png" class="rounded-circle" alt="Picture">
+            <img src="/img/rolex-logo.png" class="rounded-circle" alt="Picture">
+            <link rel="icon" href="/img/rolex-logo.png" type="image/icon type" class="rounded-circle">
             <p>
                 <label for="username" class="sr-only">Name</label>:
                 <input type="text" id="username" name="username" placeholder="Name"
@@ -30,7 +31,7 @@
 
             <label for="password" class="sr-only">Password</label>:
             <input type="password" id="password" name="password" placeholder="Password"
-                   class="form-control" required autofocus="autofocus"/>
+                   class="form-control" required autofocus="autofocus"   autocomplete="on"/>
             <br/>
             <p th:if="${loginError}" class="error" style="color: red;">
                 Wrong user or password
