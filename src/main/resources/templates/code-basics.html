@@ -231,6 +231,7 @@
                                 </tr>
                                 </thead>
                                 <tbody id="demoA">
+
                                 </tbody>
                             </table>
                         </div>
@@ -355,7 +356,7 @@
                         <td>Level:</td>
                         <td>
                             <label>
-                                <input placeholder="level" type="number" th:field="*{level}" />
+                                <input placeholder="level" type="number" th:field="*{level}"/>
                             </label>
                         </td>
                     </tr>
@@ -371,7 +372,7 @@
                         <td>Password:</td>
                         <td>
                             <label>
-                                <input placeholder="password" type="password" th:field="*{password}"/>
+                                <input placeholder="password" type="password" th:field="*{password}" autocomplete/>
                             </label>
                         </td>
                     </tr>
@@ -484,7 +485,7 @@
             <label class="font-weight-bold" for="editName">
                 <input placeholder="Must be the unique name"
                        class="form-control" id="editName"
-                       type="text"  required/>
+                       type="text" required/>
             </label>
         </div>
     </div>
@@ -540,7 +541,7 @@
             <label class="font-weight-bold" for="editPassword">
                 <input class="form-control" id="editPassword"
                        placeholder="password"
-                       type="password" required/>
+                       type="password" autocomplete required/>
             </label>
         </div>
     </div>
@@ -563,19 +564,21 @@
 </div>
 
 
-
 <!--///////////////////////////////////////////Table-Modal-End////////////////////////////////////////////////////////////////-->
 
 <script>
     // Заполнение основной таблицы
-
+    let usersList = [];
     window.addEventListener("load", () => {
+
         // (B) FETCH DATA FROM REST API
         fetch('http://localhost:8080/api/users/')
             .then(response => response.json())
             .then(data => {
+                usersList = data;
                 // (C) ADD DATA ROWS TO EXISTING TBODY
-                var tbody = document.getElementById("demoA");
+                // Добавляет данные строки в создаваемый tbody
+                let tbody = document.getElementById("demoA");
 
                 data.forEach(obj => {
                     let row = tbody.insertRow();
@@ -602,9 +605,9 @@
                     let editButton = document.createElement("button");
                     editButton.innerHTML = "Edit";
                     editButton.classList.add("btn", "btn-warning");
-                    editButton.setAttribute("onclick", "openEditModal()");
+                    editButton.setAttribute("onclick", "openEditModal(event)");
                     editButton.setAttribute("data-userid", "${user.id}");
-                    editButton.setAttribute("data-target", "#editModal");
+                    // editButton.setAttribute("data-target", "#editModal");
                     editCell.append(editButton);
 
 
@@ -615,7 +618,7 @@
                     deleteButton.classList.add("btn", "btn-danger");
                     deleteButton.setAttribute("onclick", "openDeleteModal()");
                     editButton.setAttribute("data-userid", "${user.id}");
-                    editButton.setAttribute("data-target", "#deleteModal");
+                    // editButton.setAttribute("data-target", "#deleteModal");
                     deleteCell.append(deleteButton);
                 });
             })
@@ -626,17 +629,74 @@
 <script>
 
 
-//  Открытие модального окна
-    function openEditModal() {
+    //  Открытие модального окна
+    function openEditModal(event) {
+        event.preventDefault();
         document.getElementById('edit-modal-window').style.display = 'block';
+        const userId = event.currentTarget.dataset.userid;
+        loadCurrentUser();
+        if (usersList) {
+            const selectedUser = usersList.find(user => user.id === userId);
+            console.log(usersList);
+            if (selectedUser) {
+                fillEditModalData();
+            } else {
+                console.error('Selected user not found');
+            }
+        } else {
+            console.error('Users list is not defined');
+        }
+
     }
 
+    // при нажатии кнопки save отправляет обновлённые данные на сервер
+    document.getElementById('save_edit_modal').addEventListener('click', function (event) {
+        event.preventDefault();
+        const updatedUser = {
+            id: document.getElementById('editID').value,
+            name: document.getElementById('editName').value,
+            surname: document.getElementById('editSurname').value,
+            age: document.getElementById('editAge').value,
+            level: document.getElementById('editLevel').value,
+            points: document.getElementById('editPoints').value,
+            password: document.getElementById('editPassword').value,
+            roleUser: document.getElementById('editRoleUser').checked,
+            roleAdmin: document.getElementById('editRoleAdmin').checked
+        };
+
+        updateUserOnServer(updatedUser);
+        // $('#edit-modal-window').modal('hide'); // Скрываем модальное окно после сохранения
+    });
+
+    // заполняет форму модального окна
+    function fillEditModalData() {
+        const userId = this.dataset.userid;
+        console.log('Edit button clicked for user ID:', userId);
+        const selectedUser = usersList.find(user => user.id === userId);
+
+        document.getElementById('editID').value = selectedUser.id;
+        document.getElementById('editName').value = selectedUser.name;
+        document.getElementById('editSurname').value = selectedUser.surname;
+        document.getElementById('editAge').value = selectedUser.age;
+        document.getElementById('editLevel').value = selectedUser.level;
+        document.getElementById('editPoints').value = selectedUser.points;
+        document.getElementById('editPassword').value = selectedUser.password;
+
+        document.getElementById('editRoleUser').checked = selectedUser.roles.includes('user');
+        document.getElementById('editRoleAdmin').checked = selectedUser.roles.includes('admin');
+    }
+
+    //  Крестик закрытия модального окна
     document.querySelector('.btn-close').addEventListener('click', function () {
         document.getElementById('edit-modal-window').style.display = 'none';
     });
 
-    function openDeleteModal() {
+    function openDeleteModal(event) {
+
         document.getElementById('delete-modal-window').style.display = 'block';
+        const userId = event.currentTarget.dataset.userid;
+        const selectedUser = usersList.find(user => user.id === userId);
+        fillEditModalData(selectedUser);
     }
 
     document.querySelector('.btn-close').addEventListener('click', function () {
@@ -646,6 +706,7 @@
     // Функция для обработки отправки формы
     function submitEditForm() {
         // Закрываем модальное окно после отправки формы
+        document.getElementById('edit-modal-window').style.display = 'none';
     }
 
     function submitDeleteForm() {
@@ -666,14 +727,14 @@
     populateForm('del-form');
 
 
-// Чтоб при клике вне модального окна, окно исчезло
+    // Чтоб при клике вне модального окна, окно исчезло
     // Получаем модальное окно
     const modalEdit = document.getElementById('edit-modal-window');
     const modalDelete = document.getElementById('delete-modal-window');
     const modalDeleteClose = document.getElementById('close_delete_modal');
 
     // Прослушиваем событие клика на весь документ
-    window.addEventListener('click', function(event) {
+    window.addEventListener('click', function (event) {
         // Проверяем, что клик был сделан вне модального окна
         if (event.target === modalEdit || event.target === modalDelete || event.target === modalDeleteClose) {
             modalEdit.style.display = 'none'; // Закрываем модальное окно
@@ -686,12 +747,23 @@
 
 <script>
     let currentUser;
-    let usersList;
+
+    // let usersList;
+
+    async function loadCurrentUser() {
+        try {
+            const response = await fetch('/api/users/');
+            currentUser = await response.json();
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
     // Функция для отправки данных пользователя на сервер
     async function updateUserOnServer(updatedUser) {
         try {
             const response = await fetch('/api/users/', {
-                method: 'POST',
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -701,6 +773,7 @@
             if (response.ok) {
                 console.log('User updated successfully');
                 // Дополнительные действия при успешном обновлении пользователя
+                document.getElementById('edit-modal-window').style.display = 'none'; // закрывается модальное окно
             } else {
                 console.log('Failed to update user');
                 // Дополнительные действия при ошибке обновления пользователя
@@ -710,52 +783,53 @@
         }
     }
 
+
     // Функция, которая заполняет форму модального окна данными выбранного пользователя
-    function fillModalWithData(selectedUser) {
-        document.getElementById('editID').value = selectedUser.id;
-        document.getElementById('editName').value = selectedUser.name;
-        document.getElementById('editSurname').value = selectedUser.surname;
-        document.getElementById('editAge').value = selectedUser.age;
-        document.getElementById('editLevel').value = selectedUser.level;
-        document.getElementById('editPoints').value = selectedUser.points;
-        document.getElementById('editRoleUser').checked = selectedUser.roles.includes('user');
-        document.getElementById('editRoleAdmin').checked = selectedUser.roles.includes('admin');
-    }
+    // function fillModalWithData(user) {
+    //     document.getElementById('editID').value = user.id;
+    //     document.getElementById('editName').value = user.name;
+    //     document.getElementById('editSurname').value = user.surname;
+    //     document.getElementById('editAge').value = user.age;
+    //     document.getElementById('editLevel').value = user.level;
+    //     document.getElementById('editPoints').value = user.points;
+    //     document.getElementById('editRoleUser').checked = user.roles.includes('user');
+    //     document.getElementById('editRoleAdmin').checked = user.roles.includes('admin');
+    // }
 
     // Обработчик события нажатия кнопки "Edit" в таблице
-    function editButtonHandler(userId) {
-        const selectedUser = usersList.find(user => user.id == userId);
-        fillModalWithData(selectedUser);
-        // Отображаем модальное окно
-        document.getElementById('myModal').style.display = 'block';
-
-        // Обработчик на кнопку "Сохранить" в модальном окне
-        document.getElementById('saveButton').addEventListener('click', function() {
-            const updatedUser = {
-                id: document.getElementById('editID').value,
-                name: document.getElementById('editName').value,
-                surname: document.getElementById('editSurname').value,
-                age: document.getElementById('editAge').value,
-                level: document.getElementById('editLevel').value,
-                points: document.getElementById('editPoints').value,
-                roles: []
-            };
-            if (document.getElementById('editRoleUser').checked) {
-                updatedUser.roles.push('user');
-            }
-            if (document.getElementById('editRoleAdmin').checked) {
-                updatedUser.roles.push('admin');
-            }
-
-            updateUserOnServer(updatedUser);
-        });
-    }
+    //     function editButtonHandler(selectedUserById) {
+    //         const user = usersList.find(user => user.id === selectedUserById);
+    //         fillModalWithData(user);
+    //         // Отображаем модальное окно
+    //         document.getElementById('edit-modal-window').style.display = 'block';
+    //
+    //         // Обработчик на кнопку "Сохранить" в модальном окне
+    //         document.getElementById('save_edit_modal').addEventListener('click', function () {
+    //             const updatedUser = {
+    //                 id: document.getElementById('editID').value,
+    //                 name: document.getElementById('editName').value,
+    //                 surname: document.getElementById('editSurname').value,
+    //                 age: document.getElementById('editAge').value,
+    //                 level: document.getElementById('editLevel').value,
+    //                 points: document.getElementById('editPoints').value,
+    //                 roles: []
+    //             };
+    //             if (document.getElementById('editRoleUser').checked) {
+    //                 updatedUser.roles.push('user');
+    //             }
+    //             if (document.getElementById('editRoleAdmin').checked) {
+    //                 updatedUser.roles.push('admin');
+    //             }
+    // // Обработчик функции для отправки данных пользователя на сервер
+    //             updateUserOnServer(updatedUser);
+    //         });
+    //     }
 
 
 </script>
 
 <script>
- // Создание пользователя
+    // Создание пользователя
     let createNewUser = document.getElementById('createNewUser');
     createNewUser.onsubmit = async (e) => {
         e.preventDefault();
@@ -774,7 +848,7 @@
             body: json
         });
 
-        let result = await response.json();
+        // let result = await response.json();
         // alert(result.message);
     };
 
