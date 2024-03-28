@@ -15,12 +15,4 @@ public class UserGlobalExceptionHandler {
 
         return new ResponseEntity<>(data, HttpStatus.NOT_FOUND);
     }
-
-//    @ExceptionHandler
-//    public ResponseEntity<UserIncorrectData> handleException(Exception exception) {
-//        UserIncorrectData data = new UserIncorrectData();
-//        data.setInfo(exception.getMessage());
-//
-//        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-//    }
 }

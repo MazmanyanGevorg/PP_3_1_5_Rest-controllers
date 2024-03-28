@@ -3,15 +3,9 @@ package ru.kata.spring.boot_security.demo.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-
-import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -34,8 +28,6 @@ public class UserDTO {
     private int points;
 
     private Set<RoleDTO> roles;
-//    private List<String> roles1 = new ArrayList<>();
-
 
     public UserDTO(User user) {
 

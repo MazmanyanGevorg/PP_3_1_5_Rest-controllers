@@ -12,7 +12,6 @@ import ru.kata.spring.boot_security.demo.dto.UserDTO;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
@@ -58,15 +57,6 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles;
-//
-//    @Column(name = "createdAt")
-//    private LocalDateTime createdAt;
-//
-//    @Column(name = "updateAt")
-//    private LocalDateTime updateAt;
-//
-//    @Column(name = "createdWho")
-//    private String createdWho;
 
     public User(String password, String name, String surname, int age, int level, int points) {
         this.name = name;

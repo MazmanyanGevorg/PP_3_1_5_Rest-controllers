@@ -20,7 +20,6 @@ import ru.kata.spring.boot_security.demo.util.UserNotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,12 +60,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             userDAO.saveAndFlush(user);
         } else throw new RuntimeException("User by id: " + user.getId() + " in DB already exist");
     }
-
-//    private void enrichUser(User user) {
-//        user.setCreatedAt(LocalDateTime.now());
-//        user.setUpdateAt(LocalDateTime.now());
-//        user.setCreatedWho("ADMIN");
-//    }
 
     @Override
     public void updateUser(User user) {

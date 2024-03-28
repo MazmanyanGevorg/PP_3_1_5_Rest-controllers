@@ -3,11 +3,8 @@ package ru.kata.spring.boot_security.demo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.dao.RoleDAO;
 import ru.kata.spring.boot_security.demo.dto.UserDTO;
 import ru.kata.spring.boot_security.demo.mapper.Mapper;
 import ru.kata.spring.boot_security.demo.model.User;
@@ -21,14 +18,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/users")
 public class UserRestController {
     private final UserServiceImpl userService;
-    private final RoleDAO roleDAO;
 
     private final Mapper mapper;
 
     @Autowired
-    public UserRestController(UserServiceImpl userService, RoleDAO roleDAO, Mapper mapper) {
+    public UserRestController(UserServiceImpl userService, Mapper mapper) {
         this.userService = userService;
-        this.roleDAO = roleDAO;
         this.mapper = mapper;
     }
 
@@ -45,12 +40,11 @@ public class UserRestController {
     }
 
     @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
-    public void create(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
+    public ResponseEntity<HttpStatus> create(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
         userService.conditionForBindingResult(bindingResult);
         userService.addUser(mapper.convertToUser(userDTO));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
-
-
 
     @PatchMapping(value = "/", consumes = "application/json", produces = "application/json")
     public void edit(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {

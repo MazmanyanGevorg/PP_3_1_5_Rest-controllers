@@ -117,16 +117,16 @@
         .btn-close:hover,
         .btn-close:focus {
             color: #000;
-            text-decoration: none;
+            text-decoration: black;
             cursor: pointer;
         }
 
         .table-modal {
-            display: none;
+            display: contents;
         }
 
+
     </style>
-    <script src="js/rest.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
             crossorigin="anonymous"></script>
@@ -171,9 +171,9 @@
 </nav>
 
 <div class="tab">
-    <!--todo security off    <div th:if="${#request.isUserInRole('ROLE_ADMIN')}">-->
-    <button class="tablinks" onclick="openCity(event, 'Admin')">Admin</button>
-    <!--    </div>-->
+    <div th:if="${#request.isUserInRole('ROLE_ADMIN')}">
+        <button class="tablinks" id="adminLeftBtn" onclick="openCity(event, 'Admin')">Admin</button>
+    </div>
     <button class="tablinks" onclick="openCity(event, 'User')" id="defaultOpen">User</button>
 </div>
 
@@ -196,12 +196,12 @@
                     </button>
                 </li>
                 <li class="nav-item">
-                    <!--todo security off                    <div th:if="${#request.isUserInRole('ROLE_ADMIN')}">-->
-                    <button class="nav-link active" style="background-color: lightsteelblue" aria-current="true"
-                            onclick="openCity(event, 'NewUser')">
-                        New User
-                    </button>
-                    <!--                    </div>-->
+                    <div th:if="${#request.isUserInRole('ROLE_ADMIN')}">
+                        <button class="nav-link active" style="background-color: lightsteelblue" aria-current="true"
+                                onclick="openCity(event, 'NewUser')">
+                            New User
+                        </button>
+                    </div>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" style="background-color: lightsteelblue" href="/">Back</a>
@@ -218,12 +218,12 @@
                             <table class="table table-striped table-responsive-md" align='center' id="userTable">
                                 <thead>
                                 <tr>
-                                    <th scope="col" style="background-color: cornflowerblue">id</th>
-                                    <th scope="col" style="background-color: cornflowerblue">Name</th>
-                                    <th scope="col" style="background-color: cornflowerblue">Surname</th>
-                                    <th scope="col" style="background-color: cornflowerblue">Age</th>
-                                    <th scope="col" style="background-color: cornflowerblue">Level</th>
-                                    <th scope="col" style="background-color: cornflowerblue">Points</th>
+                                    <th scope="col" style="background-color: cornflowerblue" id="tId">id</th>
+                                    <th scope="col" style="background-color: cornflowerblue" id="tName">Name</th>
+                                    <th scope="col" style="background-color: cornflowerblue" id="tSurname">Surname</th>
+                                    <th scope="col" style="background-color: cornflowerblue" id="tAge">Age</th>
+                                    <th scope="col" style="background-color: cornflowerblue" id="tLevel">Level</th>
+                                    <th scope="col" style="background-color: cornflowerblue" id="tPoints">Points</th>
                                     <!--                                            <th scope="col" style="background-color: cornflowerblue">Password</th>-->
                                     <th scope="col" style="background-color: cornflowerblue">Roles</th>
                                     <th style="background-color: sandybrown">Edit</th>
@@ -305,12 +305,12 @@
         <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs">
                 <li class="nav-item">
-                    <!--todo security off                    <div th:if="${#request.isUserInRole('ROLE_ADMIN')}">-->
-                    <button class="nav-link active" aria-current="true" style="background-color: lightsteelblue"
-                            onclick="openCity(event, 'Admin')">
-                        Users table
-                    </button>
-                    <!--                    </div>-->
+                    <div th:if="${#request.isUserInRole('ROLE_ADMIN')}">
+                        <button class="nav-link active" aria-current="true" style="background-color: lightsteelblue"
+                                onclick="openCity(event, 'Admin')">
+                            Users table
+                        </button>
+                    </div>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="true" href="#"
@@ -325,14 +325,14 @@
         <div align="center">
             <h3>New User</h3>
             <i style="color: blue">При создании пользователей имена должны быть уникальными!</i>
-            <form th:action="@{/api/users}" th:method="post" th:object="${user}" id="createNewUser">
+            <form th:action="@{/api/users/}" th:method="post" th:object="${user}" id="createNewUser">
                 <table border="0" cellpadding="5">
                     <tr>
                         <td>Name:</td>
                         <td>
                             <label>
                                 <input placeholder="Must be the unique name"
-                                       type="text" th:field="*{name}"/>
+                                       type="text" th:field="*{name}" id="nameNewUser"/>
                             </label>
                         </td>
                     </tr>
@@ -340,7 +340,7 @@
                         <td>Surname:</td>
                         <td>
                             <label>
-                                <input placeholder="Surname" type="text" th:field="*{surname}"/>
+                                <input placeholder="Surname" type="text" th:field="*{surname}" id="surnameNewUser"/>
                             </label>
                         </td>
                     </tr>
@@ -348,7 +348,7 @@
                         <td>Age:</td>
                         <td>
                             <label>
-                                <input placeholder="Age" type="number" th:field="*{age}"/>
+                                <input placeholder="Age" type="number" th:field="*{age}" id="ageNewUser"/>
                             </label>
                         </td>
                     </tr>
@@ -356,7 +356,7 @@
                         <td>Level:</td>
                         <td>
                             <label>
-                                <input placeholder="level" type="number" th:field="*{level}"/>
+                                <input placeholder="level" type="number" th:field="*{level}" id="levelNewUser"/>
                             </label>
                         </td>
                     </tr>
@@ -364,7 +364,7 @@
                         <td>Points:</td>
                         <td>
                             <label>
-                                <input placeholder="points" type="number" th:field="*{points}"/>
+                                <input placeholder="points" type="number" th:field="*{points}" id="pointsNewUser"/>
                             </label>
                         </td>
                     </tr>
@@ -372,7 +372,8 @@
                         <td>Password:</td>
                         <td>
                             <label>
-                                <input placeholder="password" type="password" th:field="*{password}" autocomplete/>
+                                <input placeholder="password" type="password"
+                                       th:field="*{password}" id="passwordNewUser" autocomplete/>
                             </label>
                         </td>
                     </tr>
@@ -384,7 +385,8 @@
                                 <input th:type="checkbox"
                                        th:id="'role_' + ${role.id}"
                                        th:name="'roles'"
-                                       th:value="${role.id}"/>
+                                       th:value="${role.id}"
+                                       id="rolesNewUser"/>
                                 <span th:text="${role.role}"></span>
                             </label>
                         </td>
@@ -392,7 +394,7 @@
                     <tr>
                         <td>
                             <input type="submit" value="Save"
-                                   class="btn btn-success"/>
+                                   class="btn btn-success" id="SaveCratedUser"/>
                         </td>
                     </tr>
                 </table>
@@ -411,7 +413,7 @@
             <div class="modal-header">
                 <h3 class="modal-title fs-5" id="exampleModalLabel">Edit
                     User</h3>
-                <button class="btn-close" data-dismiss="modal"
+                <button class="btn-close"
                         id="close_edit_modal" aria-label="close">
                 </button>
             </div>
@@ -419,7 +421,103 @@
                 <div align="center">
                     <h2>Edit User</h2>
                     <form id="edit-user-form">
-                        <div id="ed-form"></div>
+                        <div id="table-modal-edit" class="table-modal" border="0" cellpadding="5">
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    ID:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="editID">
+                                        <input class="form-control" id="editID"
+                                               type="number" disabled/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Name:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="editName">
+                                        <input placeholder="Must be the unique name"
+                                               class="form-control" id="editName"
+                                               type="text" required/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Surname:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="editSurname">
+                                        <input class="form-control" id="editSurname"
+                                               type="text" required/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Age:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="editAge">
+                                        <input class="form-control" id="editAge"
+                                               type="number" required/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Level:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="editLevel">
+                                        <input class="form-control" id="editLevel"
+                                               type="number" required/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Points:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="editPoints">
+                                        <input class="form-control" id="editPoints"
+                                               type="number" required/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Password:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="editPassword">
+                                        <input class="form-control" id="editPassword"
+                                               placeholder="password"
+                                               type="password" autocomplete required/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Roles:
+                                </div>
+                                <div class="col">
+                                    <div id="editOptions">
+                                        <label for="editRoleSelectADMIN">ADMIN</label>
+                                        <input type="checkbox" id="editRoleSelectADMIN"
+                                               value="ROLE_ADMIN" checked>
+                                        &nbsp;&nbsp;
+                                        <label for="editRoleSelectUSER">USER</label>
+                                        <input type="checkbox" id="editRoleSelectUSER"
+                                               value="ROLE_USER" checked>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <button type="submit" id="save_edit_modal"
                                 class="btn- btn-secondary">Save
                         </button>
@@ -434,7 +532,6 @@
 
 <!--///////////////////////////////////////////Delete-Modal-Start////////////////////////////////////////////////////////////////-->
 
-
 <div class="modal" id="delete-modal-window" role="dialog"
      tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -442,7 +539,7 @@
             <div class="modal-header">
                 <h3 class="modal-title fs-5" id="exampleModalLabel1">Delete
                     User</h3>
-                <button class="btn-close" data-dismiss="modal"
+                <button class="btn-close"
                         id="close_delete_modal" aria-label="close">
                 </button>
             </div>
@@ -450,7 +547,103 @@
                 <div align="center">
                     <h2>Delete User</h2>
                     <form id="delete-user-form">
-                        <div id="del-form"></div>
+                        <div id="table-modal-delete" border="10" cellpadding="5">
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    ID:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="deleteID">
+                                        <input class="form-control" id="deleteID"
+                                               type="number" disabled/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Name:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="deleteName">
+                                        <input placeholder="Must be the unique name"
+                                               class="form-control" id="deleteName"
+                                               type="text" required/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Surname:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="deleteSurname">
+                                        <input class="form-control" id="deleteSurname"
+                                               type="text" required/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Age:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="deleteAge">
+                                        <input class="form-control" id="deleteAge"
+                                               type="number" required/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Level:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="deleteLevel">
+                                        <input class="form-control" id="deleteLevel"
+                                               type="number" required/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Points:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="deletePoints">
+                                        <input class="form-control" id="deletePoints"
+                                               type="number" required/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Password:
+                                </div>
+                                <div class="col">
+                                    <label class="font-weight-bold" for="deletePassword">
+                                        <input class="form-control" id="deletePassword"
+                                               placeholder="password"
+                                               type="password" autocomplete required/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-auto">
+                                <div class="col-4">
+                                    Roles:
+                                </div>
+                                <div class="col">
+                                    <div id="deleteOptions">
+                                        <label for="deleteRoleSelectADMIN">ADMIN</label>
+                                        <input type="checkbox" id="deleteRoleSelectADMIN"
+                                               value="ROLE_ADMIN" checked>
+                                        &nbsp;&nbsp;
+                                        <label for="deleteRoleSelectUSER">USER</label>
+                                        <input type="checkbox" id="deleteRoleSelectUSER"
+                                               value="ROLE_USER" checked>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <button type="submit" id="save_delete_modal"
                                 class="btn- btn-secondary">Delete
                         </button>
@@ -462,110 +655,6 @@
 </div>
 <!--///////////////////////////////////////////Delete-Modal-End////////////////////////////////////////////////////////////////-->
 
-<!--///////////////////////////////////////////Table-Modal-Start////////////////////////////////////////////////////////////////-->
-
-
-<div id="table-modal" class="table-modal" border="0" cellpadding="5">
-    <div class="row row-cols-auto">
-        <div class="col-4">
-            ID:
-        </div>
-        <div class="col">
-            <label class="font-weight-bold" for="editID">
-                <input class="form-control" id="editID"
-                       type="number" disabled/>
-            </label>
-        </div>
-    </div>
-    <div class="row row-cols-auto">
-        <div class="col-4">
-            Name:
-        </div>
-        <div class="col">
-            <label class="font-weight-bold" for="editName">
-                <input placeholder="Must be the unique name"
-                       class="form-control" id="editName"
-                       type="text" required/>
-            </label>
-        </div>
-    </div>
-    <div class="row row-cols-auto">
-        <div class="col-4">
-            Surname:
-        </div>
-        <div class="col">
-            <label class="font-weight-bold" for="editSurname">
-                <input class="form-control" id="editSurname"
-                       type="text" required/>
-            </label>
-        </div>
-    </div>
-    <div class="row row-cols-auto">
-        <div class="col-4">
-            Age:
-        </div>
-        <div class="col">
-            <label class="font-weight-bold" for="editAge">
-                <input class="form-control" id="editAge"
-                       type="number" required/>
-            </label>
-        </div>
-    </div>
-    <div class="row row-cols-auto">
-        <div class="col-4">
-            Level:
-        </div>
-        <div class="col">
-            <label class="font-weight-bold" for="editLevel">
-                <input class="form-control" id="editLevel"
-                       type="number" required/>
-            </label>
-        </div>
-    </div>
-    <div class="row row-cols-auto">
-        <div class="col-4">
-            Points:
-        </div>
-        <div class="col">
-            <label class="font-weight-bold" for="editPoints">
-                <input class="form-control" id="editPoints"
-                       type="text" required/>
-            </label>
-        </div>
-    </div>
-    <div class="row row-cols-auto">
-        <div class="col-4">
-            Password:
-        </div>
-        <div class="col">
-            <label class="font-weight-bold" for="editPassword">
-                <input class="form-control" id="editPassword"
-                       placeholder="password"
-                       type="password" autocomplete required/>
-            </label>
-        </div>
-    </div>
-    <div class="row row-cols-auto">
-        <div class="col-4">
-            Roles:
-        </div>
-        <div class="col">
-            <div id="editOptions">
-                <label for="editRoleSelectADMIN">ADMIN</label>
-                <input type="checkbox" id="editRoleSelectADMIN"
-                       value="ADMIN" checked>
-                &nbsp;&nbsp;
-                <label for="editRoleSelectUSER">USER</label>
-                <input type="checkbox" id="editRoleSelectUSER"
-                       value="USER" checked>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!--///////////////////////////////////////////Table-Modal-End////////////////////////////////////////////////////////////////-->
-
 <script>
     // Заполнение основной таблицы
     let usersList = [];
@@ -576,12 +665,10 @@
             .then(response => response.json())
             .then(data => {
                 usersList = data;
-                // (C) ADD DATA ROWS TO EXISTING TBODY
                 // Добавляет данные строки в создаваемый tbody
-                let tbody = document.getElementById("demoA");
 
                 data.forEach(obj => {
-                    let row = tbody.insertRow();
+                    let row = demoATbody.insertRow();
                     for (let key in obj) {
                         // Skip the "password" key
                         if (key !== "password") {
@@ -601,12 +688,14 @@
                     }
 
                     // Add edit button
+                    let user = obj;
                     let editCell = row.insertCell();
                     let editButton = document.createElement("button");
                     editButton.innerHTML = "Edit";
                     editButton.classList.add("btn", "btn-warning");
-                    editButton.setAttribute("onclick", "openEditModal(event)");
-                    editButton.setAttribute("data-userid", "${user.id}");
+                    editButton.setAttribute("onclick", "editButtonHandler(event)");
+                    editButton.setAttribute("data-userid", user.id);
+                    editButton.setAttribute("id", "idButtonEdit");
                     // editButton.setAttribute("data-target", "#editModal");
                     editCell.append(editButton);
 
@@ -616,9 +705,10 @@
                     let deleteButton = document.createElement("button");
                     deleteButton.innerHTML = "Delete";
                     deleteButton.classList.add("btn", "btn-danger");
-                    deleteButton.setAttribute("onclick", "openDeleteModal()");
-                    editButton.setAttribute("data-userid", "${user.id}");
-                    // editButton.setAttribute("data-target", "#deleteModal");
+                    deleteButton.setAttribute("onclick", "deleteButtonHandler(event)");
+                    deleteButton.setAttribute("data-userid", user.id);
+                    deleteButton.setAttribute("id", "idButtonDelete");
+                    // deleteButton.setAttribute("data-target", "#deleteModal");
                     deleteCell.append(deleteButton);
                 });
             })
@@ -628,92 +718,47 @@
 
 <script>
 
+    // Обработчик события нажатия кнопки "Edit" в таблице
+    function editButtonHandler(event) {
+        event.preventDefault();
+        let userId = Number.parseInt(event.target.dataset.userid);
+        const user = usersList.find(user => user.id === userId);
+        fillModalWithData(user);
+        //show modal window
+        openEditModal();
+    }
+
+    // Обработчик события нажатия кнопки "Edit" в таблице
+    function deleteButtonHandler(event) {
+        event.preventDefault();
+        let userId = Number.parseInt(event.target.dataset.userid);
+        const user = usersList.find(user => user.id === userId);
+        fillModalDeleteWithData(user);
+        //show modal window
+        openDeleteModal(userId);
+    }
 
     //  Открытие модального окна
-    function openEditModal(event) {
-        event.preventDefault();
-        document.getElementById('edit-modal-window').style.display = 'block';
-        const userId = event.currentTarget.dataset.userid;
-        loadCurrentUser();
-        if (usersList) {
-            const selectedUser = usersList.find(user => user.id === userId);
-            console.log(usersList);
-            if (selectedUser) {
-                fillEditModalData();
-            } else {
-                console.error('Selected user not found');
-            }
-        } else {
-            console.error('Users list is not defined');
-        }
-
+    function openEditModal() {
+        modalEdit.style.display = 'block';
     }
 
-    // при нажатии кнопки save отправляет обновлённые данные на сервер
-    document.getElementById('save_edit_modal').addEventListener('click', function (event) {
-        event.preventDefault();
-        const updatedUser = {
-            id: document.getElementById('editID').value,
-            name: document.getElementById('editName').value,
-            surname: document.getElementById('editSurname').value,
-            age: document.getElementById('editAge').value,
-            level: document.getElementById('editLevel').value,
-            points: document.getElementById('editPoints').value,
-            password: document.getElementById('editPassword').value,
-            roleUser: document.getElementById('editRoleUser').checked,
-            roleAdmin: document.getElementById('editRoleAdmin').checked
-        };
-
-        updateUserOnServer(updatedUser);
-        // $('#edit-modal-window').modal('hide'); // Скрываем модальное окно после сохранения
-    });
-
-    // заполняет форму модального окна
-    function fillEditModalData() {
-        const userId = this.dataset.userid;
-        console.log('Edit button clicked for user ID:', userId);
-        const selectedUser = usersList.find(user => user.id === userId);
-
-        document.getElementById('editID').value = selectedUser.id;
-        document.getElementById('editName').value = selectedUser.name;
-        document.getElementById('editSurname').value = selectedUser.surname;
-        document.getElementById('editAge').value = selectedUser.age;
-        document.getElementById('editLevel').value = selectedUser.level;
-        document.getElementById('editPoints').value = selectedUser.points;
-        document.getElementById('editPassword').value = selectedUser.password;
-
-        document.getElementById('editRoleUser').checked = selectedUser.roles.includes('user');
-        document.getElementById('editRoleAdmin').checked = selectedUser.roles.includes('admin');
-    }
 
     //  Крестик закрытия модального окна
     document.querySelector('.btn-close').addEventListener('click', function () {
-        document.getElementById('edit-modal-window').style.display = 'none';
+        modalEdit.style.display = 'none';
     });
 
-    function openDeleteModal(event) {
-
-        document.getElementById('delete-modal-window').style.display = 'block';
-        const userId = event.currentTarget.dataset.userid;
-        const selectedUser = usersList.find(user => user.id === userId);
-        fillEditModalData(selectedUser);
+    function openDeleteModal() {
+        modalDelete.style.display = 'block';
     }
 
     document.querySelector('.btn-close').addEventListener('click', function () {
-        document.getElementById('delete-modal-window').style.display = 'none';
+        modalDelete.style.display = 'none';
     });
 
-    // Функция для обработки отправки формы
-    function submitEditForm() {
-        // Закрываем модальное окно после отправки формы
-        document.getElementById('edit-modal-window').style.display = 'none';
-    }
 
-    function submitDeleteForm() {
-        // Закрываем модальное окно после отправки формы
-    }
-
-    const tableContent = document.getElementById('table-modal').innerHTML;
+    let tableContent = document.getElementById('table-modal-edit').innerHTML;
 
     function populateForm(formId) {
         const form = document.getElementById(formId);
@@ -721,17 +766,8 @@
     }
 
     // Вызов функции для заполнения формы edit-modal-window
-    populateForm('ed-form');
+    populateForm('table-modal-edit');
 
-    // Вызов функции для заполнения формы delete-modal-window
-    populateForm('del-form');
-
-
-    // Чтоб при клике вне модального окна, окно исчезло
-    // Получаем модальное окно
-    const modalEdit = document.getElementById('edit-modal-window');
-    const modalDelete = document.getElementById('delete-modal-window');
-    const modalDeleteClose = document.getElementById('close_delete_modal');
 
     // Прослушиваем событие клика на весь документ
     window.addEventListener('click', function (event) {
@@ -743,23 +779,8 @@
         }
     });
 
-</script>
 
-<script>
-    let currentUser;
-
-    // let usersList;
-
-    async function loadCurrentUser() {
-        try {
-            const response = await fetch('/api/users/');
-            currentUser = await response.json();
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-        }
-    }
-
-    // Функция для отправки данных пользователя на сервер
+    // Функция для отправки данных пользователя на сервер и получения ответа от сервера
     async function updateUserOnServer(updatedUser) {
         try {
             const response = await fetch('/api/users/', {
@@ -772,85 +793,85 @@
 
             if (response.ok) {
                 console.log('User updated successfully');
-                // Дополнительные действия при успешном обновлении пользователя
-                document.getElementById('edit-modal-window').style.display = 'none'; // закрывается модальное окно
+                adminLeftBtn.click();
+                modalEdit.style.display = 'none'; // закрывается модальное окно
+                return refreshTable();
             } else {
                 console.log('Failed to update user');
-                // Дополнительные действия при ошибке обновления пользователя
             }
         } catch (error) {
             console.error('Error updating user:', error);
         }
     }
 
+    async function elementUpdate(selector) {
+        try {
+            const html = await (await fetch(location.href)).text();
+            const newdoc = new DOMParser().parseFromString(html, 'text/html');
+            document.querySelector(selector).outerHTML = newdoc.querySelector(selector).outerHTML;
+            console.log('Элемент ' + selector + ' был успешно обновлен');
+            return true;
+        } catch (err) {
+            console.log('При обновлении элемента ' + selector + ' произошла ошибка:');
+            console.error(err);
+            return false;
+        }
+    }
 
     // Функция, которая заполняет форму модального окна данными выбранного пользователя
-    // function fillModalWithData(user) {
-    //     document.getElementById('editID').value = user.id;
-    //     document.getElementById('editName').value = user.name;
-    //     document.getElementById('editSurname').value = user.surname;
-    //     document.getElementById('editAge').value = user.age;
-    //     document.getElementById('editLevel').value = user.level;
-    //     document.getElementById('editPoints').value = user.points;
-    //     document.getElementById('editRoleUser').checked = user.roles.includes('user');
-    //     document.getElementById('editRoleAdmin').checked = user.roles.includes('admin');
-    // }
-
-    // Обработчик события нажатия кнопки "Edit" в таблице
-    //     function editButtonHandler(selectedUserById) {
-    //         const user = usersList.find(user => user.id === selectedUserById);
-    //         fillModalWithData(user);
-    //         // Отображаем модальное окно
-    //         document.getElementById('edit-modal-window').style.display = 'block';
-    //
-    //         // Обработчик на кнопку "Сохранить" в модальном окне
-    //         document.getElementById('save_edit_modal').addEventListener('click', function () {
-    //             const updatedUser = {
-    //                 id: document.getElementById('editID').value,
-    //                 name: document.getElementById('editName').value,
-    //                 surname: document.getElementById('editSurname').value,
-    //                 age: document.getElementById('editAge').value,
-    //                 level: document.getElementById('editLevel').value,
-    //                 points: document.getElementById('editPoints').value,
-    //                 roles: []
-    //             };
-    //             if (document.getElementById('editRoleUser').checked) {
-    //                 updatedUser.roles.push('user');
-    //             }
-    //             if (document.getElementById('editRoleAdmin').checked) {
-    //                 updatedUser.roles.push('admin');
-    //             }
-    // // Обработчик функции для отправки данных пользователя на сервер
-    //             updateUserOnServer(updatedUser);
-    //         });
-    //     }
+    function fillModalWithData(user) {
+        document.getElementById('editID').value = user.id;
+        document.getElementById('editName').value = user.name;
+        document.getElementById('editSurname').value = user.surname;
+        document.getElementById('editAge').value = user.age;
+        document.getElementById('editLevel').value = user.level;
+        document.getElementById('editPoints').value = user.points;
+        document.getElementById('editPassword').value = user.password;
+        document.getElementById('editRoleSelectUSER').checked = JSON.stringify(user.roles).includes('ROLE_USER');
+        document.getElementById('editRoleSelectADMIN').checked = JSON.stringify(user.roles).includes('ROLE_ADMIN');
+    }
 
 
-</script>
+    // Обработчик на кнопку "Сохранить" в модальном окне
+    document.getElementById('save_edit_modal').addEventListener('click', function (event) {
+        event.preventDefault();
+        const updatedUser = {
+            id: document.getElementById('editID').value,
+            name: document.getElementById('editName').value,
+            surname: document.getElementById('editSurname').value,
+            age: document.getElementById('editAge').value,
+            level: document.getElementById('editLevel').value,
+            points: document.getElementById('editPoints').value,
+            password: document.getElementById('editPassword').value,
+            roles: []
+        };
+        if (document.getElementById('editRoleSelectUSER').checked) {
+            updatedUser.roles.push({
+                "id": 2,
+                "role": "ROLE_USER"
+            });
+        }
+        if (document.getElementById('editRoleSelectADMIN').checked) {
+            updatedUser.roles.push({
+                "id": 1,
+                "role": "ROLE_ADMIN"
+            });
+        }
+        // Обработчик функции для отправки данных пользователя на сервер
+        updateUserOnServer(updatedUser);
+    });
 
-<script>
-    // Создание пользователя
-    let createNewUser = document.getElementById('createNewUser');
-    createNewUser.onsubmit = async (e) => {
-        e.preventDefault();
-        let formData = new FormData(createNewUser);
-
-        const plainFormData = Object.fromEntries(formData.entries());
-        plainFormData.roles = formData.getAll('roles');
-        const json = JSON.stringify(plainFormData);
-
-        let response = await fetch('/api/users/', {
-
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8'
-            },
-            method: 'POST',
-            body: json
-        });
-
-        // let result = await response.json();
-        // alert(result.message);
-    };
+    function fillModalDeleteWithData(user) {
+        document.getElementById('deleteID').value = user.id;
+        document.getElementById('deleteName').value = user.name;
+        document.getElementById('deleteSurname').value = user.surname;
+        document.getElementById('deleteAge').value = user.age;
+        document.getElementById('deleteLevel').value = user.level;
+        document.getElementById('deletePoints').value = user.points;
+        document.getElementById('deletePassword').value = user.password;
+        document.getElementById('deleteRoleSelectUSER').checked = JSON.stringify(user.roles).includes('ROLE_USER');
+        document.getElementById('deleteRoleSelectADMIN').checked = JSON.stringify(user.roles).includes('ROLE_ADMIN');
+    }
 
 </script>
 
@@ -858,7 +879,7 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
@@ -869,6 +890,6 @@
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous">
 </script>
-
+<script src="/js/rest.js"></script>
 </body>
 </html>
